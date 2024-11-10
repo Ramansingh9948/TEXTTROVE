@@ -203,15 +203,8 @@
         <li><a href="/quotes">Quotes</a></li>
         <li><a href="/books">Books</a></li>
         <li><a href="/articles">Articles</a></li>
-        <% if (!isAuthenticated) { %>
-          <!-- Show these links only if the user is NOT logged in -->
-          <li><a href="/login">Login</a></li>
-          <li><a href="/signup">Sign Up</a></li>
-        <% } else { %>
-          <!-- Show these links only if the user IS logged in -->
-          <li><a href="/dashboard">Dashboard</a></li>
-          <li><a href="/logout">Logout</a></li>
-        <% } %>
+        <li><a href="/signup">Sign Up</a></li>
+        <li><a href="/login">Login</a></li>
       </ul>
     </nav>
   </header>
