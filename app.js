@@ -18,8 +18,6 @@ require('dotenv').config();
 const Article = require("./Models/article.js");
 const Quote = require("./Models/quote.js"); // Import the Quote model
 const ContactUs = require("./Models/contactUs.js");
-const contactUs = require("./Models/contactUs.js");
-
 
 // Initialize the app
 const app = express();
@@ -40,18 +38,19 @@ app.use(express.static(path.join(__dirname, "/public/assets")));
 
 // Database connection
 // const dbURI = 'mongodb://localhost:27017/TextTroveDB';
-const dburl = process.env.ATLASDB_URI
-mongoose.connect(dburl)
-  .then(() => console.log('Connected to MongoDB successfully'))
-  .catch(err => console.error('Failed to connect to MongoDB:', err));
+const dbURI = process.env.ATLASDB_URI;
+mongoose.connect(dbURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    connectTimeoutMS: 10000,
+}).then(() => console.log('Connected to MongoDB successfully'))
+    .catch((err) => console.error('Failed to connect to MongoDB:', err));
 
-// Express session
 // Express session
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === 'production' }
+    saveUninitialized: false,
 }));
 
 // Connect-flash setup
@@ -62,32 +61,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 require('./config/passport')(passport);
 
-// = async(req, res, next) =>{
-//     let { id } = req.params;
-//     let article = await Article.findById(id);
-//     if (!article || !article.owner._id.equals(res.locals.currentUser._id)) {
-//         req.flash("error", "You do not have permission to edit this article");
-//         return res.status(403).redirect(`/articles/${id}`);
-//     }
-//     next();
-// };
-// = async(req, res, next) =>{
-//     let { id } = req.params;
-//     let quote = await Quote.findById(id);
-//     if (!quote || !quote.author._id.equals(res.locals.currentUser._id)) {
-//         req.flash("error", "You do not have permission to edit this quote");
-//         return res.status(403).redirect(`/quotes/${id}`);
-//     }
-//     next();
-// };
 // Middleware to save the original URL
-// Middleware to make `isAuthenticated` available in all templates
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isAuthenticated || false;
-    res.locals.user = req.session.user || null; // optional: if you want user info in views
+function saveReturnTo(req, res, next) {
+    if (!req.isAuthenticated() && req.originalUrl) {
+        req.session.returnTo = req.originalUrl;// Save the original URL
+    }
     next();
-  });
-  
+}
 
 // Middleware to make flash messages available in all views
 app.use((req, res, next) => {
@@ -133,32 +113,25 @@ app.post('/signup', [
 });
 
 // Login route
-// Login route example
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-  
-    // Authenticate the user (e.g., check the password, etc.)
-    const user = await User.findOne({ email });
-    if (user && (await passport.authenticate(user.password, password))) {
-      // Set session variable or token
-      req.session.isAuthenticated = true;
-      req.session.user = user;
-  
-      // Redirect to homepage or another page
-      res.redirect('/');
-    } else {
-      res.status(401).send('Invalid credentials');
-    }
-  });
-  
-  // Logout route to end the session
-  app.get('/logout', (req, res) => {
-    req.session.destroy(() => {
-      res.redirect('/');
-    });
-  });
-  
+app.post('/login', saveReturnTo, passport.authenticate('local', {
+    successRedirect: `/`,
+    failureRedirect: '/login',
+    // failureFlash: true, // Enables flash messages on failure
+    failureMessage: 'Either email or password is incorrect. ',
 
+}));
+
+// Logout route
+app.get('/logout', (req, res) => {
+    req.logout(err => {
+        if (err) {
+            req.flash('error', 'Logout error');
+            return res.redirect('/');
+        }
+        req.flash('success', 'Logged out successfully');
+        res.redirect('/');
+    });
+});
 
 // Middleware to ensure the user is authenticated
 function ensureAuthenticated(req, res, next) {
