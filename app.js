@@ -46,10 +46,12 @@ mongoose.connect(dburl)
   .catch(err => console.error('Failed to connect to MongoDB:', err));
 
 // Express session
+// Express session
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
+    cookie: { secure: process.env.NODE_ENV === 'production' }
 }));
 
 // Connect-flash setup
