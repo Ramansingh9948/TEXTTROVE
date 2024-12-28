@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const User = require('./Models/user'); // Import user model
-require('dotenv').config(); // Load environment variables
+const User = require('./Models/user');
+require('dotenv').config();
 
 // MongoDB connection string
 const dbURI = process.env.ATLASDB_URI;

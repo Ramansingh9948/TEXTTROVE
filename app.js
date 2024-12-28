@@ -20,6 +20,7 @@ const Article = require("./Models/article.js");
 const Quote = require("./Models/quote.js"); // Import the Quote model
 const ContactUs = require("./Models/contactUs.js");
 
+
 // Initialize the app
 const app = express();
 
@@ -77,16 +78,21 @@ function saveReturnTo(req, res, next) {
     }
     next();
 }
+//Middlware to check the user is loggedin or not
+
+
+
 
 // Middleware to make flash messages available in all views
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    res.locals.currentUser = req.user;
     next();
 });
 
 // Routes
-app.get("/", (req, res) => res.render("home.ejs"));
+app.get("/", (req, res)=> res.render("home.ejs"));
 app.get("/signup", (req, res) => res.render("signup.ejs"));
 app.get("/login", (req, res) => res.render("login.ejs"));
 // Register route
@@ -116,7 +122,7 @@ app.post('/signup', [
     }
   });
 
-/// app.js or routes.js
+/// app.js
 app.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
       if (err) { return next(err); }
@@ -315,7 +321,6 @@ app.get("/articles/:id", async (req, res) => {
         console.error('Error fetching article:', err);
         res.status(500).send('Server error');
     }
-
 });
 //
 //Update Articles

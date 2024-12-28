@@ -219,7 +219,7 @@
     <hr>
 
     <!-- Chart.js Container -->
-    <canvas id="myChart" style="width: ; height: 100px;"></canvas>
+    <canvas id="myChart" style="width: 5px; height: 100px;"></canvas>
 
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
@@ -229,19 +229,18 @@
                 labels: ['Users', 'Quotes', 'Articles', 'Contact Us'],
                 datasets: [{
                     label: 'Total Counts',
-                    data: [<%= data.totalUsers %>, <%= data.totalQuotes %>, <%= data.totalArticles %>,<%= data.totalContacts %> ],
-                    backgroundColor: ['#FF5733', '#33FF57', '#3357FF'], // Color for each bar
-                    borderColor: ['#FF5733', '#33FF57', '#3357FF'], // Optional: border color for each bar
+                    data: [<%= data.totalUsers %>, <%= data.totalQuotes %>, <%= data.totalArticles %>, <%= data.totalContacts %>],
+                    backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FFC300'], // Added a fourth color
+                    borderColor: ['#FF5733', '#33FF57', '#3357FF', '#FFC300'], // Added a fourth border color
                     borderWidth: 1 // Optional: border width
                 }]
             },
             options: {
                 responsive: true,
-                // maintainAspectRatio: false // This allows the chart to resize based on the canvas size
+                maintainAspectRatio: false // Uncommented to allow resizing
             }
         });
     </script>
-
     <hr>
     <h2>Contact us</h2>
     <table border="1">
