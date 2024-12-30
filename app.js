@@ -19,7 +19,7 @@ const passport = require('./config/passport');  // Just import the passport conf
 const Article = require("./Models/article.js");
 const Quote = require("./Models/quote.js"); // Import the Quote model
 const ContactUs = require("./Models/contactUs.js");
-const Visit = require("./models/visit.js");
+const Visit = require("./Models/visit.js");
 
 
 // Initialize the app
