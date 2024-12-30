@@ -153,7 +153,7 @@ app.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
       if (err) { return next(err); }
       if (!user) { 
-        console.log("user not found"); 
+        res.json('message: User not found');
         return res.redirect('/login');
        
     }
@@ -205,7 +205,7 @@ app.post('/contact', async (req, res) => {
   
       // Send email using a service like SendGrid or Nodemailer
       // For simplicity, we'll just log the contact details
-      console.log(contactingDetail);
+     
   
       res.send('Thank you for contacting us! We will get back to you soon.');
     } catch (error) {
@@ -256,7 +256,7 @@ app.get("/quotes/:id", async(req, res) =>{
         res.status(404).send('Quote not found.');
     }
     try {
-        console.log(quote);
+        
         // If the article is found, render the article view
         res.render("quoteDetails", { quote });
     } catch (err) {
@@ -275,7 +275,7 @@ app.get("/quotes/:id/edit", async(req, res) => {
         try {
             res.render("editQuote", { quote });
             } catch (err) {
-                console.log("error", err);
+                cres.json("message: quote not found")
                 res.status(500).send('Server error');
             }
 
@@ -340,7 +340,7 @@ app.get("/articles/:id", async (req, res) => {
         res.status(404).send('Article not found.');
     }
     try {
-        console.log(article);
+       
         // If the article is found, render the article view
         res.render("articleDetails", { article });
     } catch (err) {
