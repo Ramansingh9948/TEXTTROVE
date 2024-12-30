@@ -59,7 +59,34 @@
     .navbar .nav-links li a:hover {
       color: #ffdf5c;
     }
-    
+    /* Visitors Section */
+.visitors {
+  text-align: center;
+  margin: 40px 0;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.visitors:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.visitors h3 {
+  font-size: 1.8rem;
+  color: #4a90e2;
+  font-weight: 700;
+}
+
+.visitors p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-top: 10px;
+}
+
     /* Hero Section */
     .hero {
       text-align: center;
@@ -197,7 +224,7 @@
   <!-- Navigation Bar -->
   <header>
     <nav class="navbar">
-      <div class="logo"><a href="/">TextTrove</a></div>
+      <div class="logo"><a href="/">TextTrove </a></div>
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
         <li><a href="/quotes">Quotes</a></li>
@@ -216,7 +243,13 @@
       </ul>
     </nav>
   </header>
-
+  <div class="container">
+    <div class="visitors">
+      <h3>Total Number of Visitors:</h3>
+      <p><%= visit.totalVisits %></p>
+    </div>
+  </div>
+  
   <!-- Hero Section -->
   <div class="container">
     <section class="hero">

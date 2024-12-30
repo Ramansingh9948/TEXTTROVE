@@ -19,6 +19,7 @@ const passport = require('./config/passport');  // Just import the passport conf
 const Article = require("./Models/article.js");
 const Quote = require("./Models/quote.js"); // Import the Quote model
 const ContactUs = require("./Models/contactUs.js");
+const Visit = require("./models/Visit");
 
 
 // Initialize the app
@@ -92,7 +93,32 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.get("/", (req, res)=> res.render("home.ejs"));
+app.get("/", async (req, res) => {
+    try {
+      const clientIp = req.headers["x-forwarded-for"] || req.connection.remoteAddress; // Get visitor IP
+      let visit = await Visit.findOne();
+  
+      if (!visit) {
+        // Create the first record
+        visit = new Visit({ totalVisits: 1, uniqueVisitors: 1, visitors: [clientIp] });
+      } else {
+        visit.totalVisits += 1; // Increment total visits
+  
+        // Check if the IP is unique
+        if (!visit.visitors.includes(clientIp)) {
+          visit.uniqueVisitors += 1;
+          visit.visitors.push(clientIp); // Add new IP to the list
+        }
+      }
+  
+      await visit.save();
+  
+      res.render("home", {   visit });
+    } catch (err) {
+      console.error("Error handling request:", err);
+      res.status(500).send("Internal Server Error");
+    }
+  });
 app.get("/signup", (req, res) => res.render("signup.ejs"));
 app.get("/login", (req, res) => res.render("login.ejs"));
 // Register route
