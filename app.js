@@ -14,6 +14,13 @@ require('dotenv').config();
 const adminRoutes = require('./routes/admin'); // Import admin routes
 const passport = require('./config/passport');  // Just import the passport configuration
 
+const multer = require('multer');
+const { storage } = require('./cloudinaryConfig');
+const Blog = require('./Models/blog');
+
+// Configure Multer with Cloudinary storage
+const upload = multer({ storage });
+
 // Import models
 // const User = require("./Models/user.js");
 const Article = require("./Models/article.js");
@@ -311,7 +318,7 @@ app.get("/quotes/:id/edit", async(req, res) => {
 app.delete("/article/:id/", (req, res) =>{
     const id = req.params.id;
     Article.findByIdAndRemove(id, (err, deletedArticle) => {
-        if (err) {
+        if (err) { 
             res.status(500).send('Server error');
             }
             if (!deletedArticle) {
@@ -409,6 +416,61 @@ app.post('/submit-article', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// Route to display all blogs
+app.get('/blogs', async (req, res) => {
+    try {
+      const blogs = await Blog.find().sort({ createdAt: -1 });
+      res.render('../blogs/index', { blogs });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
+  });
+  
+  // Route to display the form for creating a blog
+  app.get('/new-blogs', (req, res) => {
+    res.render('../blogs/new');
+  });
+  
+  // Route to create a new blog
+  app.post('/blogs', upload.single('image'), async (req, res) => {
+    try {
+      const { title, content } = req.body;
+      const blog = new Blog({
+        title,
+        content,
+        image: req.file ? { url: req.file.path, filename: req.file.filename } : null,
+      });
+      await blog.save();
+      res.redirect('../blogs');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
+  });
+  
+  // Route to view a specific blog
+  app.get('/blogs/:id', async (req, res) => {
+    try {
+      const blog = await Blog.findById(req.params.id);
+      res.render('../blogs/show', { blog });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
+  });
+  
+  // Route to delete a blog
+  app.post('/blogs/:id/delete', async (req, res) => {
+    try {
+      const blog = await Blog.findByIdAndDelete(req.params.id);
+      res.redirect('../blogs');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
+  });
 
 app.get('/*', (req, res) => {
     res.render('error.ejs');
